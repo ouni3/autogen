@@ -1,80 +1,90 @@
-# AutoGen-Core Streaming Chat with Multi-Agent Handoffs via FastAPI
+# **AutoGen-Core 流式聊天与 FastAPI 多智能体交接**
 
-This sample demonstrates how to build a streaming chat API featuring multi-agent handoffs and persistent conversation history using `autogen-core` and FastAPI. For more details on the handoff pattern, see the [AutoGen documentation](https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/design-patterns/handoffs.html).
+本示例演示了如何使用 `autogen-core` 和 FastAPI 构建一个具有多智能体交接和持久化对话历史的流式聊天 API。有关交接模式的更多详细信息，请参阅 [AutoGen 文档](https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/design-patterns/handoffs.html)。
 
-Inspired by `@ToryPan`'s example for streaming with Core API.
+灵感来源于 `@ToryPan` 的 Core API 流式传输示例。
 
-## Key Features
+## **功能说明**
 
-1.  **Streaming Response**: Implements real-time streaming of agent responses using FastAPI's `StreamingResponse`, `autogen-core`'s asynchronous features, and an `asyncio.Queue` to manage the data stream.
-2.  **Multi-Agent Handoffs**: Showcases a system where different agents (Triage, Sales, Issues & Repairs) handle specific parts of a conversation, using tools (`delegate_tools`) to transfer the conversation between agents based on the context.
-3.  **Persistent Multi-Turn Conversation**: Agents receive and process conversation history, enabling context-aware interactions. History is saved per conversation ID in JSON files within the `chat_history` directory, allowing conversations to resume across sessions.
-4.  **Simple Web UI**: Includes a basic web interface (served via FastAPI's static files) for easy interaction with the chat system directly from a browser.
+本示例的核心功能是提供一个基于 FastAPI 的聊天 API，支持实时流式响应、智能体之间的无缝交接以及持久化的对话历史。
 
-## File Structure
+### **主要特性**
 
-*   `app.py`: Main FastAPI application code, including API endpoints, agent definitions, runtime setup, handoff logic, and streaming.
-*   `agent_user.py`: Defines the `UserAgent` responsible for interacting with the human user and saving chat history.
-*   `agent_base.py`: Defines the base `AIAgent` class used by specialized agents.
-*   `models.py`: Contains data models used for communication (e.g., `UserTask`, `AgentResponse`).
-*   `topics.py`: Defines topic types used for routing messages between agents.
-*   `tools.py`: Defines tools that agents can execute (e.g., `execute_order_tool`).
-*   `tools_delegate.py`: Defines tools specifically for delegating/transferring the conversation to other agents.
-*   `README.md`: (This document) Project introduction and usage instructions.
-*   `static/`: Contains static files for the web UI (e.g., `index.html`).
-*   `model_config_template.yaml`: Template for the model configuration file.
+1.  **流式响应**:
+    *   利用 FastAPI 的 `StreamingResponse`、`autogen-core` 的异步特性和 `asyncio.Queue` 来管理数据流，实现智能体响应的实时流式传输。
+2.  **多智能体交接**:
+    *   展示了一个系统，其中不同的智能体（如分类智能体、销售智能体、问题与维修智能体）处理对话的不同部分。
+    *   智能体使用工具（`delegate_tools`）根据对话上下文在智能体之间转移对话。
+3.  **持久化多轮对话**:
+    *   智能体接收并处理对话历史，从而实现上下文感知的交互。
+    *   历史记录按对话 ID 保存在 `chat_history` 目录中的 JSON 文件中，允许对话在不同会话之间恢复。
+4.  **简单 Web UI**:
+    *   包含一个基本的 Web 界面（通过 FastAPI 的静态文件提供），方便直接从浏览器与聊天系统进行交互。
 
-## Installation
+## **文件结构**
 
-First, ensure you have Python installed (recommended 3.8 or higher). Then, install the necessary libraries:
+*   `app.py`: 主要的 FastAPI 应用程序代码，包括 API 端点、智能体定义、运行时设置、交接逻辑和流式传输。
+*   `agent_user.py`: 定义负责与人类用户交互并保存聊天历史的 `UserAgent`。
+*   `agent_base.py`: 定义专业智能体使用的基础 `AIAgent` 类。
+*   `models.py`: 包含用于通信的数据模型（例如 `UserTask`、`AgentResponse`）。
+*   `topics.py`: 定义用于在智能体之间路由消息的主题类型。
+*   `tools.py`: 定义智能体可以执行的工具（例如 `execute_order_tool`）。
+*   `tools_delegate.py`: 定义专门用于将对话委托/转移给其他智能体的工具。
+*   `README.md`: (本文档) 项目介绍和使用说明。
+*   `static/`: 包含 Web UI 的静态文件（例如 `index.html`）。
+*   `model_config_template.yaml`: 模型配置文件的模板。
+
+## **安装**
+
+首先，请确保您已安装 Python（建议 3.8 或更高版本）。然后，安装必要的库：
 
 ```bash
 pip install "fastapi" "uvicorn[standard]" "autogen-core" "autogen-ext[openai]" "PyYAML"
 ```
 
-## Configuration
+## **配置**
 
-Create a new file named `model_config.yaml` in the same directory as this README file to configure your language model settings (e.g., Azure OpenAI details). Use `model_config_template.yaml` as a starting point.
+在与本 README 文件相同的目录中创建一个名为 `model_config.yaml` 的新文件，以配置您的语言模型设置（例如 Azure OpenAI 详细信息）。使用 `model_config_template.yaml` 作为起点。
 
-**Note**: For production, manage API keys securely using environment variables or other secrets management tools instead of hardcoding them in the configuration file.
+**注意**: 对于生产环境，请使用环境变量或其他秘密管理工具安全地管理 API 密钥，而不是将其硬编码在配置文件中。
 
-## Running the Application
+## **运行应用程序**
 
-In the directory containing `app.py`, run the following command to start the FastAPI application:
+在包含 `app.py` 的目录中，运行以下命令以启动 FastAPI 应用程序：
 
 ```bash
 uvicorn app:app --host 0.0.0.0 --port 8501 --reload
 ```
 
-The application includes a simple web interface. After starting the server, navigate to `http://localhost:8501` in your browser.
+应用程序包含一个简单的 Web 界面。启动服务器后，在浏览器中导航到 `http://localhost:8501`。
 
-The API endpoint for chat completions will be available at `http://localhost:8501/chat/completions`.
+聊天完成的 API 端点将位于 `http://localhost:8501/chat/completions`。
 
-## Using the API
+## **使用 API**
 
-You can interact with the agent system by sending a POST request to the `/chat/completions` endpoint. The request body must be in JSON format and contain a `message` field (the user's input) and a `conversation_id` field to track the chat session.
+您可以通过向 `/chat/completions` 端点发送 POST 请求与智能体系统进行交互。请求正文必须为 JSON 格式，并包含 `message` 字段（用户输入）和 `conversation_id` 字段以跟踪聊天会话。
 
-**Request Body Format**:
+**请求正文格式**:
 
 ```json
 {
-  "message": "I need refund for a product.",
+  "message": "我需要退款。",
   "conversation_id": "user123_session456"
 }
 ```
 
-**Example (using curl)**:
+**示例 (使用 curl)**:
 
 ```bash
 curl -N -X POST http://localhost:8501/chat/completions \
 -H "Content-Type: application/json" \
 -d '{
-  "message": "Hi, I bought a rocket-powered unicycle and it exploded.",
+  "message": "你好，我买了一辆火箭动力独轮车，它爆炸了。",
   "conversation_id": "wile_e_coyote_1"
 }'
 ```
 
-**Example (using Python requests)**:
+**示例 (使用 Python requests)**:
 
 ```python
 import requests
@@ -82,7 +92,7 @@ import json
 import uuid
 
 url = "http://localhost:8501/chat/completions"
-conversation_id = f"conv-id" # Generate a unique conversation ID for a different session.
+conversation_id = f"conv-id" # 为不同的会话生成唯一的对话 ID。
 
 def send_message(message_text):
     data = {
@@ -91,8 +101,8 @@ def send_message(message_text):
     }
     headers = {'Content-Type': 'application/json'}
     try:
-        print(f"\n>>> User: {message_text}")
-        print("<<< Assistant: ", end="", flush=True)
+        print(f"\n>>> 用户: {message_text}")
+        print("<<< 助手: ", end="", flush=True)
         response = requests.post(url, json=data, headers=headers, stream=True)
         response.raise_for_status()
         full_response = ""
@@ -113,7 +123,7 @@ def send_message(message_text):
                                 # Print based on type (optional, could just print message_content)
                                 if message_type == 'function':
                                     print(f"[{message_type.upper()}] {message_content}", end='\n', flush=True) # Print function calls on new lines for clarity
-                                    print("<<< Assistant: ", end="", flush=True) # Reprint prefix for next string part
+                                    print("<<< 助手: ", end="", flush=True) # Reprint prefix for next string part
                                 else:
                                     print(message_content, end='', flush=True)
 
@@ -124,21 +134,21 @@ def send_message(message_text):
                 except json.JSONDecodeError:
                     print(f"\nError decoding chunk/line: '{line if 'line' in locals() else chunk_str}'")
 
-        print("\n--- End of Response ---")
+        print("\n--- 响应结束 ---")
         return full_response
 
     except requests.exceptions.RequestException as e:
-        print(f"\nError: {e}")
+        print(f"\n错误: {e}")
     except Exception as e:
-        print(f"\nAn unexpected error occurred: {e}")
+        print(f"\n发生意外错误: {e}")
 
-# Start conversation
-send_message("I want refund")
-# Continue conversation (example)
-# send_message("I want the rocket my friend Amith bought.")
-# send_message("They are the SpaceX 3000s")
-# send_message("That sounds great, I'll take it!")
-# send_message("Yes, I agree to the price and the caveat.")
+# 开始对话
+send_message("我需要退款")
+# 继续对话 (示例)
+# send_message("我想要我的朋友 Amith 买的火箭。")
+# send_message("它们是 SpaceX 3000 型号。")
+# send_message("听起来很棒，我买了！")
+# send_message("是的，我同意价格和注意事项。")
 
 
 ```

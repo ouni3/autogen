@@ -1,52 +1,46 @@
-# AgentChat Chess Game
+# **AgentChat 国际象棋游戏**
 
-This is a simple chess game that you can play with an AI agent.
+这是一个简单的国际象棋游戏，您可以与 AI 智能体对战。
 
-## Setup
+## **功能说明**
 
-Install the `chess` package with the following command:
+本示例通过 `main.py` 脚本启动一个国际象棋游戏。游戏支持两种模式：
+
+1.  **AI 对战随机智能体 (默认模式)**: 在此模式下，一个 AI 智能体将与一个每步都随机移动的智能体进行对战。
+2.  **人机对战模式**: 通过添加 `--human` 标志，您可以亲自与 AI 智能体进行对战。
+
+AI 智能体利用大语言模型（LLM）来理解棋局并做出决策。
+
+## **安装与配置**
+
+### **1. 安装依赖**
+
+首先，请确保您已安装所有必需的 Python 包：
 
 ```bash
-pip install "chess"
+pip install "chess" "autogen-ext[openai]" autogen-agentchat pyyaml
 ```
 
-To use OpenAI models or models hosted on OpenAI-compatible API endpoints,
-you need to install the `autogen-ext[openai]` package. You can install it with the following command:
+*   `chess`: 用于处理国际象棋逻辑。
+*   `autogen-ext[openai]`: 用于连接 OpenAI 模型或兼容 OpenAI API 的终结点。如果您使用 Azure OpenAI，请安装 `"autogen-ext[openai,azure]"`。
+*   `autogen-agentchat` 和 `pyyaml`: AutoGen 的核心组件和配置所需。
 
-```bash
-pip install "autogen-ext[openai]"
-# pip install "autogen-ext[openai,azure]" for Azure OpenAI models
-```
+### **2. 配置模型**
 
-To run this sample, you will need to install the following packages:
+在脚本所在的目录中，创建一个名为 `model_config.yaml` 的文件，用于配置您希望使用的语言模型。
 
-```shell
-pip install -U autogen-agentchat pyyaml
-```
+以下是一些配置示例：
 
-Create a new file named `model_config.yaml` in the the same directory as the script
-to configure the model you want to use.
-
-For example, to use `gpt-4o` model from OpenAI, you can use the following configuration:
+**使用 OpenAI 的 gpt-4o 模型:**
 
 ```yaml
 provider: autogen_ext.models.openai.OpenAIChatCompletionClient
 config:
   model: gpt-4o
-  api_key: replace with your API key or skip it if you have environment variable OPENAI_API_KEY set
+  api_key: "sk-..." # 替换为您的 API 密钥，或设置 OPENAI_API_KEY 环境变量
 ```
 
-To use `o3-mini-2025-01-31` model from OpenAI, you can use the following configuration:
-
-```yaml
-provider: autogen_ext.models.openai.OpenAIChatCompletionClient
-config:
-  model: o3-mini-2025-01-31
-  api_key: replace with your API key or skip it if you have environment variable OPENAI_API_KEY set
-```
-
-To use a locally hosted DeepSeek-R1:8b model using Ollama throught its compatibility endpoint,
-you can use the following configuration:
+**使用本地通过 Ollama 托管的 DeepSeek-R1:8b 模型:**
 
 ```yaml
 provider: autogen_ext.models.openai.OpenAIChatCompletionClient
@@ -61,19 +55,21 @@ config:
     family: r1
 ```
 
-For more information on how to configure the model and use other providers,
-please refer to the [Models documentation](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html).
+有关如何配置模型和使用其他提供商的更多信息，请参阅[模型文档](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html)。
 
-## Run
+## **运行游戏**
 
-Run the following command to start the game:
+### **AI 对战随机智能体**
+
+运行以下命令以启动默认模式的游戏：
 
 ```bash
 python main.py
 ```
 
-By default, the game will use a random agent to play against the AI agent.
-You can enable human vs AI mode by setting the `--human` flag:
+### **人机对战**
+
+要启用人机对战模式，请使用 `--human` 标志：
 
 ```bash
 python main.py --human

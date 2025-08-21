@@ -1,138 +1,165 @@
-# Task-Centric Memory Code Samples
-_(EXPERIMENTAL, RESEARCH IN PROGRESS)_
+# **以任务为中心的记忆代码示例**
+_(实验性，研究进行中)_
 
 <p align="right">
-  <img src="../../packages/autogen-ext/imgs/task_centric_memory.png" alt="Description" width="300" align="right" style="margin-left: 10px;">
+  <img src="../../packages/autogen-ext/imgs/task_centric_memory.png" alt="描述" width="300" align="right" style="margin-left: 10px;">
 </p>
 
-This directory contains code samples that illustrate the following forms of fast, memory-based learning:
-* Direct memory storage and retrieval
-* Learning from user advice and corrections
-* Learning from user demonstrations
-* Learning from the agent's own experience
+此目录包含的代码示例展示了以下形式的快速、基于记忆的学习：
+*   直接记忆存储和检索
+*   从用户建议和纠正中学习
+*   从用户演示中学习
+*   从智能体自身经验中学习
 
-Each sample connects task-centric memory to a selectable agent with no changes to that agent's code.
-See the block diagram to the right for an overview of the components and their interactions.
+每个示例都将以任务为中心的记忆连接到一个可选择的智能体，而无需更改该智能体的代码。
+有关组件及其交互的概述，请参阅右侧的框图。
 
-Each sample is contained in a separate python script, using data and configs stored in yaml files for easy modification.
-Note that since agent behavior is non-deterministic, results will vary between runs.
+每个示例都包含在一个单独的 Python 脚本中，使用存储在 YAML 文件中的数据和配置，以便于修改。
+请注意，由于智能体行为是非确定性的，因此每次运行的结果都会有所不同。
 
-To watch operations live in a browser and see how task-centric memory works,
-open the HTML page at the location specified at the top of the config file,
-such as: `./pagelogs/teachability/0  Call Tree.html`
-To turn off logging entirely, set logging level to NONE in the config file.
+要在浏览器中实时观看操作并了解以任务为中心的记忆如何工作，
+请打开配置文件顶部指定位置的 HTML 页面，
+例如：`./pagelogs/teachability/0 Call Tree.html`
+要完全关闭日志记录，请在配置文件中将日志级别设置为 NONE。
 
-The config files specify an _AssistantAgent_ by default, which uses a fixed, multi-step system prompt.
-To use _MagenticOneGroupChat_ instead, specify that in the yaml file where indicated.
+配置文件默认指定一个 `_AssistantAgent_`，它使用固定的多步系统提示。
+要改用 `_MagenticOneGroupChat_`，请在 YAML 文件中指定的位置进行指示。
 
+## **功能说明**
 
-## Installation
+本示例集旨在深入探讨 AutoGen 中以任务为中心的记忆（Task-Centric Memory）机制，展示智能体如何通过不同形式的记忆来提高其学习能力和任务执行效率。
 
-Install AutoGen and its extension package as follows:
+### **主要功能和学习形式**
+
+1.  **使 AssistantAgent 可教**:
+    *   通过 `chat_with_teachable_agent.py` 脚本，演示如何使 `AssistantAgent` 具备可教性。
+    *   智能体能够从一个聊天会话中学习用户的教导（例如，关于研究摘要的长度），并在后续会话中应用这些知识，即使记忆库最初是空的。
+    *   记忆库可以通过删除 `memory_bank` 目录手动清除。
+
+2.  **直接记忆存储和检索**:
+    *   `eval_retrieval.py` 示例展示了应用程序如何直接访问 `MemoryController` 来存储和检索“任务-洞察”对。
+    *   “任务”是应用程序可能给予智能体的任何文本指令，“洞察”是任何可能帮助智能体执行此类任务的文本（如提示、建议、演示或计划）。
+    *   此示例添加了多个任务-洞察对到记忆中，为一组新任务检索记忆，记录完整的检索结果，并报告检索的准确率和召回率。通常，此示例的准确率和召回率接近 100%。
+
+3.  **智能体从用户建议和纠正中学习**:
+    *   `eval_teachability.py` 示例首先测试智能体当前缺乏的知识。
+    *   然后，向智能体提供建议以帮助其解决任务，并清除上下文窗口。
+    *   最后，再次测试智能体，以查看它是否能够成功检索并使用该建议。
+    *   在记忆的帮助下，智能体通常在此示例中取得成功。
+
+4.  **智能体从用户演示中学习**:
+    *   `eval_learning_from_demonstration.py` 示例要求智能体执行一项通常会失败的推理任务（十次）。
+    *   然后，向智能体提供一个如何解决类似但不同任务的演示，并清除上下文窗口。
+    *   最后，再次测试智能体 10 次，以查看它是否能够检索并将演示应用于原始任务。
+    *   演示存储在记忆中后，智能体的成功率会显著提高。
+
+5.  **智能体从自身经验中学习**:
+    *   `eval_self_teaching.py` 示例要求智能体执行一项通常会失败的推理任务。
+    *   然后，利用自动成功或失败反馈（对于可验证且对环境无副作用的任务），智能体通过后台学习循环找到解决方案，然后将其作为洞察存储在记忆中。
+    *   最后，再次测试智能体，以查看它是否能够检索并将其洞察应用于原始任务，以及作为泛化测试的类似但不同的任务。
+    *   使用记忆，智能体通常在第二组试验中成功完成这两个任务。
+
+## **安装**
+
+按照以下步骤安装 AutoGen 及其扩展包：
 
 ```bash
 pip install -U "autogen-agentchat" "autogen-ext[openai]" "autogen-ext[task-centric-memory]"
 ```
 
-Assign your OpenAI key to the environment variable OPENAI_API_KEY,
-or else modify `utils/client.py` as appropriate for the model you choose.
+将您的 OpenAI 密钥分配给环境变量 `OPENAI_API_KEY`，
+或者根据您选择的模型修改 `utils/client.py`。
 
+## **运行示例**
 
-## Running the Samples
+以下示例按复杂性递增的顺序列出。
+从 `python/samples/task_centric_memory` 目录执行相应的命令。
 
-The following samples are listed in order of increasing complexity.
-Execute the corresponding commands from the `python/samples/task_centric_memory` directory.
+### **1. 使 AssistantAgent 可教**
 
+这个简短的交互式代码示例展示了如何使 `AssistantAgent` 可教。
+以下步骤展示了智能体如何从一个聊天会话到下一个聊天会话学习用户教导，
+从一个空的记忆库开始。
+记忆库可以通过删除 `memory_bank` 目录（如果它存在于之前的运行中）手动清除，如下所示。
 
-### Making AssistantAgent Teachable
-
-This short, interactive code sample shows how to make the AssistantAgent teachable.
-The following steps show the agent learning a user teaching from one chat session to the next,
-starting with an empty memory bank.
-The memory bank can be cleared manually by deleting the memory_bank directory (if it exists from a prior run), as shown below.
-    
 ```bash
 rm -r memory_bank
 python chat_with_teachable_agent.py
-Now chatting with a teachable agent. Please enter your first message. Type 'exit' or 'quit' to quit.
+现在正在与一个可教的智能体聊天。请输入您的第一条消息。输入“exit”或“quit”退出。
 
-You: How many items should be put in research summaries?
----------- user ----------
-How many items should be put in research summaries?
----------- teachable_agent ----------
-<generates a long discussion>
+您: 研究摘要应该包含多少项？
+---------- 用户 ----------
+研究摘要应该包含多少项？
+---------- 可教智能体 ----------
+<生成冗长的讨论>
 
-You: Whenever asked to prepare a research summary, try to cover just the 5 top items.
----------- user ----------
-Whenever asked to prepare a research summary, try to cover just the 5 top items.
----------- teachable_agent ----------
-<discusses the advice>
+您: 无论何时要求准备研究摘要，请尝试只涵盖前 5 项。
+---------- 用户 ----------
+无论何时要求准备研究摘要，请尝试只涵盖前 5 项。
+---------- 可教智能体 ----------
+<讨论建议>
 
-You: quit
+您: quit
 
 python chat_with_teachable_agent.py`
-Now chatting with a teachable agent. Please enter your first message. Type 'exit' or 'quit' to quit.
+现在正在与一个可教的智能体聊天。请输入您的第一条消息。输入“exit”或“quit”退出。
 
-You: How many items should be put in research summaries?
----------- user ----------
-How many items should be put in research summaries?
----------- teachable_agent ----------
-[MemoryContent(content='Whenever asked to prepare a research summary, try to cover just the 5 top items.', mime_type='MemoryMimeType.TEXT', metadata={})]
----------- teachable_agent ----------
-<generates a more appropriate answer> 
+您: 研究摘要应该包含多少项？
+---------- 用户 ----------
+研究摘要应该包含多少项？
+---------- 可教智能体 ----------
+[MemoryContent(content='无论何时要求准备研究摘要，请尝试只涵盖前 5 项。', mime_type='MemoryMimeType.TEXT', metadata={})]
+---------- 可教智能体 ----------
+<生成更合适的答案>
 ```
 
+### **2. 直接记忆存储和检索**
 
-### Direct Memory Storage and Retrieval
+此示例展示了应用程序如何直接访问 `MemoryController`
+以检索先前存储的任务-洞察对，作为解决某些新任务时可能有用示例。
+任务是应用程序可能给予智能体的任何文本指令。
+洞察是任何可能帮助智能体执行此类任务的文本（如提示、建议、演示或计划）。
 
-This sample shows how an app can access the `MemoryController` directly
-to retrieve previously stored task-insight pairs as potentially useful examplars when solving some new task.
-A task is any text instruction that the app may give to an agent.
-An insight is any text (like a hint, advice, a demonstration or plan) that might help the agent perform such tasks.
+典型的应用程序将以某种交错顺序执行以下步骤：
+1.  重复调用 `MemoryController` 以存储一组记忆（任务-洞察对）。
+2.  重复调用 `MemoryController` 以检索与新任务相关的任何记忆。
+3.  使用检索到的洞察，通常通过将它们添加到智能体的上下文窗口。（此步骤未在此代码示例中说明。）
 
-A typical app will perform the following steps in some interleaved order:
-1. Call the `MemoryController` repeatedly to store a set of memories (task-insight pairs).
-2. Call the `MemoryController` repeatedly to retrieve any memories related to a new task.
-3. Use the retrieved insights, typically by adding them to the agent's context window. (This step is not illustrated by this code sample.)
-
-This sample code adds several task-insight pairs to memory, retrieves memories for a set of new tasks,
-logs the full retrieval results, and reports the retrieval precision and recall.
+此示例代码向记忆中添加了几个任务-洞察对，为一组新任务检索记忆，
+记录完整的检索结果，并报告检索的准确率和召回率。
 
 `python eval_retrieval.py configs/retrieval.yaml`
 
-Precision and recall for this sample are usually near 100%.
+此示例的准确率和召回率通常接近 100%。
 
+### **3. 智能体从用户建议和纠正中学习**
 
-### Agent Learning from User Advice and Corrections
-
-This sample first tests the agent (once) for knowledge it currently lacks.
-Then the agent is given advice to help it solve the task, and the context window is cleared.
-Finally the agent is once tested again to see if it can retrieve and use the advice successfully.
+此示例首先测试智能体（一次）当前缺乏的知识。
+然后向智能体提供建议以帮助其解决任务，并清除上下文窗口。
+最后再次测试智能体，以查看它是否能够成功检索并使用该建议。
 
 `python eval_teachability.py configs/teachability.yaml`
 
-With the benefit of memory, the agent usually succeeds on this sample.
+在记忆的帮助下，智能体通常在此示例中取得成功。
 
+### **4. 智能体从用户演示中学习**
 
-### Agent Learning from User Demonstrations
-
-This sample asks the agent to perform a reasoning task (ten times) on which it usually fails.
-The agent is then given one demonstration of how to solve a similar but different task, and the context window is cleared.
-Finally the agent is tested 10 more times to see if it can retrieve and apply the demonstration to the original task.
+此示例要求智能体执行一项通常会失败的推理任务（十次）。
+然后向智能体提供一个如何解决类似但不同任务的演示，并清除上下文窗口。
+最后再次测试智能体 10 次，以查看它是否能够检索并将演示应用于原始任务。
 
 `python eval_learning_from_demonstration.py configs/demonstration.yaml`
 
-The agent's success rate tends to be measurably higher after the demonstration has been stored in memory.
+演示存储在记忆中后，智能体的成功率往往会显著提高。
 
+### **5. 智能体从自身经验中学习**
 
-### Agent Learning from Its Own Experience
-
-This sample asks the agent to perform a reasoning task on which it usually fails.
-Then using automatic success or failure feedback (for a verifiable task with no side-effects on the environment), 
-the agent iterates through a background learning loop to find a solution, which it then stores as an insight in memory.
-Finally the agent is tested again to see if it can retrieve and apply its insight to the original task,
-as well as to a similar but different task as a test of generalization.
+此示例要求智能体执行一项通常会失败的推理任务。
+然后，利用自动成功或失败反馈（对于可验证且对环境无副作用的任务），
+智能体通过后台学习循环找到解决方案，然后将其作为洞察存储在记忆中。
+最后再次测试智能体，以查看它是否能够检索并将其洞察应用于原始任务，
+以及作为泛化测试的类似但不同的任务。
 
 `python eval_self_teaching.py configs/self_teaching.yaml`
 
-Using memory, the agent usually completes both tasks successfully in the second set of trials.
+使用记忆，智能体通常在第二组试验中成功完成这两个任务。

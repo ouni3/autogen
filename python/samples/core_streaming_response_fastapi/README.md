@@ -1,73 +1,78 @@
-# AutoGen-Core Streaming Chat API with FastAPI
+# **AutoGen-Core 流式聊天 API 与 FastAPI**
 
-This sample demonstrates how to build a streaming chat API with multi-turn conversation history using `autogen-core` and FastAPI.
+本示例演示了如何使用 `autogen-core` 和 FastAPI 构建一个具有多轮对话历史的流式聊天 API。
 
-## Key Features
+## **功能说明**
 
-1.  **Streaming Response**: Implements real-time streaming of LLM responses by utilizing FastAPI's `StreamingResponse`, `autogen-core`'s asynchronous features, and a global queue created with `asyncio.Queue()` to manage the data stream, thereby providing faster user-perceived response times.
-2.  **Multi-Turn Conversation**: The Agent (`MyAgent`) can receive and process chat history records (`ChatHistory`) containing multiple turns of interaction, enabling context-aware continuous conversations.
+本示例的核心功能是提供一个基于 FastAPI 的聊天 API，支持实时流式响应和多轮对话历史。
 
-## File Structure
+### **主要特性**
 
-*   `app.py`: FastAPI application code, including API endpoints, Agent definitions, runtime settings, and streaming logic.
-*   `README.md`: (This document) Project introduction and usage instructions.
+1.  **流式响应**:
+    *   通过利用 FastAPI 的 `StreamingResponse`、`autogen-core` 的异步特性以及使用 `asyncio.Queue()` 创建的全局队列来管理数据流，实现 LLM 响应的实时流式传输，从而提供更快的用户感知响应时间。
+2.  **多轮对话**:
+    *   智能体 (`MyAgent`) 可以接收和处理包含多轮交互的聊天历史记录 (`ChatHistory`)，从而实现上下文感知的连续对话。
 
-## Installation
+## **文件结构**
 
-First, make sure you have Python installed (recommended 3.8 or higher). Then, in your project directory, install the necessary libraries via pip:
+*   `app.py`: FastAPI 应用程序代码，包括 API 端点、智能体定义、运行时设置和流式传输逻辑。
+*   `README.md`: (本文档) 项目介绍和使用说明。
+
+## **安装**
+
+首先，请确保您已安装 Python（建议 3.8 或更高版本）。然后，在您的项目目录中，通过 pip 安装必要的库：
 
 ```bash
 pip install "fastapi" "uvicorn[standard]" "autogen-core" "autogen-ext[openai]"
 ```
 
-## Configuration
+## **配置**
 
-Create a new file named `model_config.yaml` in the same directory as this README file to configure your model settings.
-See `model_config_template.yaml` for an example.
+在与本 README 文件相同的目录中创建一个名为 `model_config.yaml` 的新文件，以配置您的模型设置。可以参考 `model_config_template.yaml` 文件作为示例。
 
-**Note**: Hardcoding API keys directly in the code is only suitable for local testing. For production environments, it is strongly recommended to use environment variables or other secure methods to manage keys.
+**注意**: 将 API 密钥直接硬编码在代码中仅适用于本地测试。对于生产环境，强烈建议使用环境变量或其他安全方法来管理密钥。
 
-## Running the Application
+## **运行应用程序**
 
-In the directory containing `app.py`, run the following command to start the FastAPI application:
+在包含 `app.py` 的目录中，运行以下命令以启动 FastAPI 应用程序：
 
 ```bash
 uvicorn app:app --host 0.0.0.0 --port 8501 --reload
 ```
 
-After the service starts, the API endpoint will be available at `http://<your-server-ip>:8501/chat/completions`.
+服务启动后，API 端点将位于 `http://<您的服务器IP>:8501/chat/completions`。
 
-## Using the API
+## **使用 API**
 
-You can interact with the Agent by sending a POST request to the `/chat/completions` endpoint. The request body must be in JSON format and contain a `messages` field, the value of which is a list, where each element represents a turn of conversation.
+您可以通过向 `/chat/completions` 端点发送 POST 请求与智能体进行交互。请求正文必须为 JSON 格式，并包含一个 `messages` 字段，其值为一个列表，其中每个元素代表一轮对话。
 
-**Request Body Format**:
+**请求正文格式**:
 
 ```json
 {
   "messages": [
-    {"source": "user", "content": "Hello!"},
-    {"source": "assistant", "content": "Hello! How can I help you?"},
-    {"source": "user", "content": "Introduce yourself."}
+    {"source": "user", "content": "你好！"},
+    {"source": "assistant", "content": "你好！我能帮你什么？"},
+    {"source": "user", "content": "介绍一下你自己。"}
   ]
 }
 ```
 
-**Example (using curl)**:
+**示例 (使用 curl)**:
 
 ```bash
 curl -N -X POST http://localhost:8501/chat/completions \
 -H "Content-Type: application/json" \
 -d '{
   "messages": [
-    {"source": "user", "content": "Hello, I'\''m Tory."},
-    {"source": "assistant", "content": "Hello Tory, nice to meet you!"},
-    {"source": "user", "content": "Say hello by my name and introduce yourself."}
+    {"source": "user", "content": "你好，我是 Tory。"},
+    {"source": "assistant", "content": "你好 Tory，很高兴认识你！"},
+    {"source": "user", "content": "用我的名字打个招呼并介绍一下你自己。"}
   ]
 }'
 ```
 
-**Example (using Python requests)**:
+**示例 (使用 Python requests)**:
 
 ```python
 import requests
@@ -76,9 +81,9 @@ url = "http://localhost:8501/chat/completions"
 data = {
     'stream': True,
     'messages': [
-            {'source': 'user', 'content': "Hello,I'm tory."},
-            {'source': 'assistant', 'content':"hello Tory, nice to meet you!"},
-            {'source': 'user', 'content': "Say hello by my name and introduce yourself."}
+            {'source': 'user', 'content': "你好，我是 Tory。"},
+            {'source': 'assistant', 'content':"你好 Tory，很高兴认识你！"},
+            {'source': 'user', 'content': "用我的名字打个招呼并介绍一下你自己。"}
         ]
     }
 headers = {'Content-Type': 'application/json'}
@@ -90,8 +95,7 @@ try:
             print(json.loads(chunk)["content"], end='', flush=True)
 
 except requests.exceptions.RequestException as e:
-    print(f"Error: {e}")
+    print(f"错误: {e}")
 except json.JSONDecodeError as e:
-    print(f"JSON Decode Error: {e}")
+    print(f"JSON 解码错误: {e}")
 ```
-

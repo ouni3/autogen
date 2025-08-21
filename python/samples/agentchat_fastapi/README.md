@@ -1,70 +1,66 @@
-# AgentChat App with FastAPI
+# **使用 FastAPI 构建 AgentChat 应用**
 
-This sample demonstrates how to create a simple chat application using
-[AgentChat](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/index.html)
-and [FastAPI](https://fastapi.tiangolo.com/).
+本示例演示了如何使用 [AgentChat](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/index.html) 和 [FastAPI](https://fastapi.tiangolo.com/) 创建一个简单的聊天应用程序。
 
-You will be using the following features of AgentChat:
+## **功能说明**
 
-1. Agent:
-   - `AssistantAgent`
-   - `UserProxyAgent` with a custom websocket input function
-2. Team: `RoundRobinGroupChat`
-3. State persistence: `save_state` and `load_state` methods of both agent and team.
+本示例包含两个独立的 FastAPI 应用，分别展示了不同的 AgentChat 功能：
 
-## Setup
+1.  **`app_agent.py` (单智能体聊天)**:
+    *   启动一个 FastAPI 服务器，允许用户通过浏览器与单个 `AssistantAgent` 进行实时聊天。
+    *   服务器运行在 `http://localhost:8001`。
 
-Install the required packages with OpenAI support:
+2.  **`app_team.py` (智能体团队聊天)**:
+    *   启动一个 FastAPI 服务器，允许用户与一个由多个智能体组成的团队进行交互。
+    *   该团队采用 `RoundRobinGroupChat`（轮询群聊）模式，团队中的每个智能体（包括代表用户的 `UserProxyAgent`）将轮流发言。
+    *   当轮到用户发言时，浏览器中的输入框将变为可用状态。
+    *   服务器运行在 `http://localhost:8002`。
+
+### **核心特性**
+
+*   **智能体**:
+    *   `AssistantAgent`: 扮演助手的角色。
+    *   `UserProxyAgent`: 代表用户，通过自定义的 WebSocket 函数从浏览器接收输入。
+*   **团队**: `RoundRobinGroupChat`，实现轮流对话。
+*   **状态持久化**:
+    *   智能体和团队的状态（如对话历史）在每次交互后都会通过 `save_state` 方法保存到 JSON 文件中（`agent_state.json` 和 `team_state.json`）。
+    *   当服务器重启时，会通过 `load_state` 方法从这些文件中加载状态，从而实现跨会话的连续性。
+    *   另外，`agent_history.json` 和 `team_history.json` 用于存储在浏览器中显示的对话历史。
+
+## **安装与配置**
+
+### **1. 安装依赖**
+
+使用以下命令安装所有必需的软件包（包含 OpenAI 支持）：
 
 ```bash
 pip install -U "autogen-agentchat" "autogen-ext[openai]" "fastapi" "uvicorn[standard]" "PyYAML"
 ```
 
-To use models other than OpenAI, see the [Models](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html) documentation.
+要使用 OpenAI 以外的模型，请参阅[模型文档](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html)。
 
-Create a new file named `model_config.yaml` in the same directory as this README file to configure your model settings.
-See `model_config_template.yaml` for an example.
+### **2. 配置模型**
 
-## Chat with a single agent
+在本 README 文件所在的目录中，创建一个名为 `model_config.yaml` 的文件来配置您的模型。可以参考 `model_config_template.yaml` 文件作为模板。
 
-To start the FastAPI server for single-agent chat, run:
+## **运行应用**
+
+### **与单个智能体聊天**
+
+要启动单智能体聊天的 FastAPI 服务器，请运行：
 
 ```bash
 python app_agent.py
 ```
 
-Visit http://localhost:8001 in your browser to start chatting.
+然后在浏览器中访问 `http://localhost:8001` 开始聊天。
 
-## Chat with a team of agents
+### **与智能体团队聊天**
 
-To start the FastAPI server for team chat, run:
+要启动团队聊天的 FastAPI 服务器，请运行：
 
 ```bash
 python app_team.py
 ```
 
-Visit http://localhost:8002 in your browser to start chatting.
-
-The team also includes a `UserProxyAgent` agent with a custom websocket input function
-that allows the user to send messages to the team from the browser.
-
-The team follows a round-robin strategy so each agent will take turns to respond.
-When it is the user's turn, the input box will be enabled.
-Once the user sends a message, the input box will be disabled and the agents
-will take turns to respond.
-
-## State persistence
-
-The agents and team use the `load_state` and `save_state` methods to load and save
-their state from and to files on each turn.
-For the agent, the state is saved to and loaded from `agent_state.json`.
-For the team, the state is saved to and loaded from `team_state.json`.
-You can inspect the state files to see the state of the agents and team
-once you have chatted with them.
-
-When the server restarts, the agents and team will load their state from the state files
-to maintain their state across restarts.
-
-Additionally, the apps uses separate JSON files,
-`agent_history.json` and `team_history.json`, to store the conversation history
-for display in the browser.
+然后在浏览器中访问 `http://localhost:8002` 开始聊天。

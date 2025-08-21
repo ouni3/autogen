@@ -1,22 +1,40 @@
-# Async Human-in-the-Loop Example
+# **异步人机协作（Human-in-the-Loop）示例**
 
-An example showing human-in-the-loop which waits for human input before making the tool call.
+本示例展示了如何在 AutoGen 中实现异步人机协作（Human-in-the-Loop）工作流。在这种模式下，系统会在执行工具调用之前等待人类用户的输入或确认。
 
-## Prerequisites
+## **功能说明**
 
-First, you need a shell with AutoGen core and required dependencies installed.
+`main.py` 脚本演示了一个场景，其中 AI 智能体在执行某个操作（特别是工具调用）之前，会暂停并等待人类用户的明确指令。这对于需要人工审查、决策或提供额外信息的任务非常有用，确保了 AI 行为的可控性和安全性。
+
+主要特点：
+
+*   **异步等待**: 智能体在需要人工干预时不会阻塞整个流程，而是异步等待用户的输入。
+*   **工具调用前的人工确认**: 强调在执行可能具有影响力的工具（如修改数据、发送邮件等）之前，由人类进行最终确认。
+*   **可控的 AI 行为**: 允许人类在关键节点介入，指导或纠正 AI 的决策。
+
+## **安装与配置**
+
+### **1. 安装依赖**
+
+首先，请确保您已安装 AutoGen 核心库和所需的依赖项：
 
 ```bash
 pip install "autogen-ext[openai,azure]" "pyyaml"
 ```
 
-## Model Configuration
+*   `autogen-ext[openai,azure]`: 用于连接 Azure OpenAI 模型或兼容 OpenAI API 的终结点。
+*   `pyyaml`: 用于处理模型配置文件。
 
-The model configuration should defined in a `model_config.yml` file.
-Use `model_config_template.yml` as a template.
+### **2. 模型配置**
 
-## Running the example
+在脚本所在的目录中，创建一个名为 `model_config.yml` 的文件，用于配置您希望使用的语言模型。可以参考 `model_config_template.yml` 文件作为模板。
+
+## **运行示例**
+
+运行以下命令以启动示例：
 
 ```bash
 python main.py
 ```
+
+在运行过程中，当智能体需要人工输入时，程序会暂停并提示您进行交互。

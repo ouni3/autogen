@@ -1,22 +1,41 @@
-# Chess Game Example
+# **国际象棋游戏示例**
 
-An example with two chess player agents that executes its own tools to demonstrate tool use and reflection on tool use.
+本示例展示了一个包含两个国际象棋玩家智能体的应用，它们通过执行各自的工具来演示工具的使用和对工具执行结果的反思。
 
-## Prerequisites
+## **功能说明**
 
-First, you need a shell with AutoGen core and required dependencies installed.
+`main.py` 脚本启动一个国际象棋游戏，其中两个 AI 智能体相互对弈。这个示例的核心功能在于：
+
+*   **智能体对弈**: 两个 AI 智能体作为国际象棋玩家，根据棋局进行决策并执行走法。
+*   **工具使用**: 智能体能够调用内部工具来模拟国际象棋的走法，例如验证棋步的合法性、更新棋盘状态等。
+*   **工具执行反思**: 智能体在执行工具后，能够对工具的输出进行分析和反思，从而调整后续的策略或纠正错误。这展示了智能体如何通过自我修正来提高其表现。
+
+这个示例强调了 AutoGen 智能体在复杂任务中如何通过工具集成和自我反思来实现更高级的行为。
+
+## **安装与配置**
+
+### **1. 环境要求**
+
+首先，请确保您已安装 AutoGen 核心库和所需的依赖项：
 
 ```bash
 pip install "autogen-ext[openai,azure]" "chess" "pyyaml"
 ```
 
-## Model Configuration
+*   `autogen-ext[openai,azure]`: 用于连接 Azure OpenAI 模型或兼容 OpenAI API 的终结点。
+*   `chess`: 用于处理国际象棋逻辑。
+*   `pyyaml`: 用于处理模型配置文件。
 
-The model configuration should defined in a `model_config.yml` file.
-Use `model_config_template.yml` as a template.
+### **2. 模型配置**
 
-## Running the example
+在脚本所在的目录中，创建一个名为 `model_config.yml` 的文件，用于配置您希望使用的语言模型。可以参考 `model_config_template.yml` 文件作为模板。
+
+## **运行示例**
+
+运行以下命令以启动示例：
 
 ```bash
 python main.py
 ```
+
+程序将启动国际象棋游戏，并显示两个智能体之间的对弈过程。

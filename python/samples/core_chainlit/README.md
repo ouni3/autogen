@@ -1,64 +1,58 @@
-# Core ChainLit Integration Sample
+# **Core Chainlit 集成示例**
 
-In this sample, we will demonstrate how to build simple chat interface that
-interacts with a [Core](https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html)
-agent or a team, using [Chainlit](https://github.com/Chainlit/chainlit),
-and support streaming messages.
+本示例演示了如何使用 [Chainlit](https://github.com/Chainlit/chainlit) 构建一个简单的聊天界面，该界面可以与 [AutoGen Core](https://microsoft.github.io/autogen/stable/user-guide/core-user-guide/index.html) 智能体或智能体团队进行交互，并支持流式消息传输。
 
-## Overview
+## **功能说明**
 
-The `core_chainlit` sample is designed to illustrate a simple use case of ChainLit integrated with a single-threaded agent runtime. It includes the following components:
+`core_chainlit` 示例旨在展示 Chainlit 与单线程智能体运行时集成的简单用例。它包括以下组件和功能：
 
-- **Single Agent**: A single agent that operates within the ChainLit environment.
-- **Group Chat**: A group chat setup featuring two agents:
-  - **Assistant Agent**: This agent responds to user inputs.
-  - **Critic Agent**: This agent reflects on and critiques the responses from the Assistant Agent.
-- **Closure Agent**: Utilizes a closure agent to aggregate output messages into an output queue.
-- **Token Streaming**: Demonstrates how to stream tokens to the user interface.
-- **Session Management**: Manages the runtime and output queue within the ChainLit user session.
+*   **单智能体**: 一个在 Chainlit 环境中运行的单个智能体。
+*   **群聊**: 一个包含两个智能体的群聊设置：
+    *   **助手智能体 (Assistant Agent)**: 负责响应用户输入。
+    *   **评论智能体 (Critic Agent)**: 对助手智能体的响应进行反思和评论。
+*   **闭包智能体 (Closure Agent)**: 利用闭包智能体将输出消息聚合到输出队列中。
+*   **令牌流式传输**: 演示如何将令牌流式传输到用户界面，提供实时响应体验。
+*   **会话管理**: 在 Chainlit 用户会话中管理运行时和输出队列。
 
-## Requirements
+## **安装与配置**
 
-To run this sample, you will need:
-- Python 3.8 or higher
-- Installation of necessary Python packages as listed in `requirements.txt`
+### **1. 环境要求**
 
-## Installation
+要运行此示例，您需要：
 
-To run this sample, you will need to install the following packages:
+*   Python 3.8 或更高版本。
+*   安装 `requirements.txt` 中列出的必要 Python 包。
 
-```shell 
+### **2. 安装依赖**
+
+运行以下命令安装所需的软件包：
+
+```shell
 pip install -U chainlit autogen-core autogen-ext[openai] pyyaml
 ```
 
-To use other model providers, you will need to install a different extra
-for the `autogen-ext` package.
-See the [Models documentation](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html) for more information.
+要使用其他模型提供商，您需要为 `autogen-ext` 包安装不同的附加功能。有关更多信息，请参阅[模型文档](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/models.html)。
 
-## Model Configuration
+### **3. 模型配置**
 
-Create a configuration file named `model_config.yaml` to configure the model
-you want to use. Use `model_config_template.yaml` as a template.
+创建一个名为 `model_config.yaml` 的配置文件来配置您要使用的模型。请使用 `model_config_template.yaml` 作为模板。
 
+## **运行示例**
 
-## Running the Agent Sample
+### **1. 运行单智能体示例**
 
-The first sample demonstrate how to interact with a single AssistantAgent
-from the chat interface.
-Note: cd to the sample directory.
+此示例演示如何从聊天界面与单个 `AssistantAgent` 进行交互。请先 `cd` 到示例目录。
 
 ```shell
 chainlit run app_agent.py
 ```
 
-## Running the Team Sample
+### **2. 运行团队示例**
 
-The second sample demonstrate how to interact with a team of agents from the
-chat interface.
+此示例演示如何从聊天界面与一个智能体团队进行交互。
 
 ```shell
 chainlit run app_team.py -h
 ```
 
-There are two agents in the team: one is instructed to be generally helpful
-and the other one is instructed to be a critic and provide feedback.
+团队中有两个智能体：一个通常提供帮助，另一个则扮演评论家角色并提供反馈。
