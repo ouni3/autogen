@@ -1,0 +1,71 @@
+services:
+  host:
+    build: .
+    command: python run_host.py
+    ports:
+      - "50061"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    # environment:
+    #   - GEMINI_API_KEY=${GEMINI_API_KEY}
+    #   - VERTEX_API_KEY=${VERTEX_API_KEY}
+    # volumes:
+    #   - ./config.yaml:/app/config.yaml # 如果需要外部挂载配置，可以取消注释
+
+  ui:
+    build: .
+    command: python -m chainlit run run_ui.py --port 8001 --host 0.0.0.0
+    ports:
+      - "8001:8001"
+    depends_on:
+      - host
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    # environment:
+    #   - GEMINI_API_KEY=${GEMINI_API_KEY}
+    #   - VERTEX_API_KEY=${VERTEX_API_KEY}
+
+  editor:
+    build: .
+    command: sh -c "python run_editor_agent.py && tail -f /dev/null"
+    depends_on:
+      - host
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    # environment:
+    #   - GEMINI_API_KEY=${GEMINI_API_KEY}
+    #   - VERTEX_API_KEY=${VERTEX_API_KEY}
+
+  writer:
+    build: .
+    command: sh -c "python run_writer_agent.py && tail -f /dev/null"
+    depends_on:
+      - host
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    # environment:
+    #   - GEMINI_API_KEY=${GEMINI_API_KEY}
+    #   - VERTEX_API_KEY=${VERTEX_API_KEY}
+
+  group_chat_manager:
+    build: .
+    command: sh -c "python run_group_chat_manager.py && tail -f /dev/null"
+    depends_on:
+      - host
+      - editor
+      - writer
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    # environment:
+    #   - GEMINI_API_KEY=${GEMINI_API_KEY}
+    #   - VERTEX_API_KEY=${VERTEX_API_KEY}

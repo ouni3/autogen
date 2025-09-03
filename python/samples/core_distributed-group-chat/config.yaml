@@ -1,6 +1,6 @@
 host:
-  hostname: "localhost"
-  port: 50060
+  hostname: "host"
+  port: 50061
 
 group_chat_manager:
   topic_type: "group_chat"
@@ -22,13 +22,18 @@ ui_agent:
     min: 0.05
     max: 0.1
 
+
+
+provider: autogen_ext.models.openai.OpenAIChatCompletionClient
 client_config:
-  model: "gpt-4o"
-  azure_endpoint: "https://{your-custom-endpoint}.openai.azure.com"
-  azure_deployment: "{your-azure-deployment}"
-  api_version: "2024-08-01-preview"
-  api_key: ""
-  model_capabilities:
-    vision: True
-    function_calling: True
-    json_output: True
+  model: "gemini-2.5-flash-lite"
+  api_key: "sk-123456" # 请替换为您的实际 API 密钥
+  base_url: "http://192.168.0.104:8000/v1" # 模型部署在局域网其他机器的地址
+  api_type: "openai"
+  model_info:
+    family: "gemini"
+    max_tokens: 1048576
+    vision: true
+    function_calling: true
+    json_output: true
+    structured_output: true

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 from typing import Any, Awaitable, Callable, Optional
 
 import aiofiles
@@ -19,6 +20,14 @@ from fastapi.staticfiles import StaticFiles
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
+
 
 # Add CORS middleware
 app.add_middleware(
@@ -121,19 +130,22 @@ async def chat(websocket: WebSocket):
                 async for message in stream:
                     if isinstance(message, TaskResult):
                         continue
-                    await websocket.send_json(message.model_dump())
+                    # Manually serialize with our custom encoder before sending
+                    message_dump = message.model_dump()
+                    json_str = json.dumps(message_dump, cls=DateTimeEncoder)
+                    await websocket.send_text(json_str)
                     if not isinstance(message, UserInputRequestedEvent):
                         # Don't save user input events to history.
-                        history.append(message.model_dump())
+                        history.append(message_dump)
 
                 # Save team state to file.
                 async with aiofiles.open(state_path, "w") as file:
                     state = await team.save_state()
-                    await file.write(json.dumps(state))
+                    await file.write(json.dumps(state, cls=DateTimeEncoder))
 
                 # Save chat history to file.
                 async with aiofiles.open(history_path, "w") as file:
-                    await file.write(json.dumps(history))
+                    await file.write(json.dumps(history, cls=DateTimeEncoder))
                     
             except WebSocketDisconnect:
                 # Client disconnected during message processing - exit gracefully

@@ -8,7 +8,7 @@ from _utils import get_serializers, load_config, set_all_log_levels
 from autogen_core import (
     TypeSubscription,
 )
-from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 from rich.console import Console
 from rich.markdown import Markdown
@@ -22,7 +22,7 @@ async def main(config: AppConfig) -> None:
     Console().print(Markdown("Starting **`Writer Agent`**"))
 
     await writer_agent_runtime.start()
-    model_client = AzureOpenAIChatCompletionClient(**config.client_config)
+    model_client = OpenAIChatCompletionClient(**config.client_config)
     
     writer_agent_type = await BaseGroupChatAgent.register(
         writer_agent_runtime,

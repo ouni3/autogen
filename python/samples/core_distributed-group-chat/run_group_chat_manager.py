@@ -8,7 +8,7 @@ from _utils import get_serializers, load_config, set_all_log_levels
 from autogen_core import (
     TypeSubscription,
 )
-from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 from rich.console import Console
 from rich.markdown import Markdown
@@ -17,16 +17,14 @@ set_all_log_levels(logging.ERROR)
 
 
 async def main(config: AppConfig):
-    set_all_log_levels(logging.ERROR)
     group_chat_manager_runtime = GrpcWorkerAgentRuntime(host_address=config.host.address)
 
     group_chat_manager_runtime.add_message_serializer(get_serializers([RequestToSpeak, GroupChatMessage, MessageChunk]))  # type: ignore[arg-type]
     await asyncio.sleep(1)
     Console().print(Markdown("Starting **`Group Chat Manager`**"))
     await group_chat_manager_runtime.start()
-    set_all_log_levels(logging.ERROR)
 
-    model_client = AzureOpenAIChatCompletionClient(**config.client_config)
+    model_client = OpenAIChatCompletionClient(**config.client_config)
 
     group_chat_manager_type = await GroupChatManager.register(
         group_chat_manager_runtime,
